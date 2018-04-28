@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.*;
 import java.awt.*;
 
-public class Main{
+public class main{
     static String[][] deviceList = {
     // Delete, add, and change these according to your hearts desires. Both model and boardconfig work
     //   Device Name    Model          ECID
