@@ -1,7 +1,7 @@
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Random;
-import java.awt.event.*;
 import java.lang.Object;
+import java.awt.event.*;
 import java.nio.file.*;
 import javax.swing.*;
 import java.util.*;
@@ -9,20 +9,13 @@ import java.awt.*;
 import java.io.*;
 
 public class main {
-    static String[][] deviceList = {
-    //Delete, add, and change these according to your hearts desires. Both model and boardconfig work
-    //   Device Name       Model           ECID          (Make sure you add the comma)
-        {"iPhone 7P", "D111AP", "518410A58F2506"},
-        {"A Cool iPhone", "D11AP", "B0"},
-        {"Other", "iPhone7,1", "1122334454321"},
-        {"ipone u", "iPhone9,1", "58320357294A"}
-    };
-    
     //Leave this as is if TSSChecker is in the same folder as main.java
     static String tsscheckerPath = "directory/to/tsschecker_macos";
     
     //Change this to true if you would like to see the output from TSSChecker or to false if you don't
     static boolean seeOutput = false;
+    
+    static ArrayList<device> deviceList = new ArrayList<device>();
     
     static JFrame frame = new JFrame("TSS UI");
     static JPanel panel = new JPanel();
@@ -30,6 +23,13 @@ public class main {
     static Dimension buttonSize = new Dimension(75, 30);
     
     public static void main (String[] args) {
+        File file = new File("Objects");
+        String objectPath = file.getAbsolutePath();
+        Path path = Paths.get(objectPath);
+        if (Files.notExists(path)) {
+            file.mkdir();
+        }
+        
         applicationPaneHome();
     }
     
@@ -57,10 +57,10 @@ public class main {
         }});
         ranDevice.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            if (seeOutput) System.out.println(executeCommand(getRandModel(), getRandECID()));
-            else executeCommand(getRandModel(), getRandECID());
+            device temp = new device();
+            if (seeOutput) System.out.println(executeCommand(temp));
+            else executeCommand(temp);
         }});
-        
         
         frame.add(panel);
         frame.setSize(300, 100);
@@ -71,21 +71,46 @@ public class main {
     }
     
     public static void applicationPaneSaved() {
+        File file = new File("Objects");
+        File[] listOfFiles = file.listFiles();
+        for (int i=1; i<file.list().length; i++) {
+            try {
+                ObjectInputStream is = new ObjectInputStream(new FileInputStream(listOfFiles[i]));
+                device temp = (device) is.readObject();
+                deviceList.add(temp);
+                is.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            
+        }
+        
         panel.removeAll(); panel.revalidate(); panel.repaint();
         JLabel selectDevice = new JLabel("Select a Device"); panel.add(selectDevice);
-        for (int i=0; i<deviceList.length; i++) {
-            JButton dev = new JButton(deviceList[i][0]);
+        for (int i=0; i<deviceList.size(); i++) {
+            JButton dev = new JButton(deviceList.get(i).getName());
             panel.add(dev);
-            String model = deviceList[i][1];
-            String ECID = deviceList[i][2];
+            int val = i;
             dev.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    if (seeOutput) System.out.println(executeCommand(model, ECID));
-                    else executeCommand(model, ECID);
+                    if (seeOutput) System.out.println(executeCommand(deviceList.get(val)));
+                    else executeCommand(deviceList.get(val));
                 }
             });
         }
-        int frameSize = (1+deviceList.length)/2*100;
+        JButton back = new JButton("Back");
+        back.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    applicationPaneHome();
+                }
+            });
+        int frameSize = (1+deviceList.size())/2*100;
         frame.setSize(500, frameSize);
     }
     
@@ -104,50 +129,49 @@ public class main {
         JButton submit = new JButton("Submit"); panel.add(submit);
         submit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                if (seeOutput) System.out.println(executeCommand(devModel.getText(), devECID.getText()));
-                else executeCommand(devModel.getText(), devECID.getText());
+                device temp = new device(devName.getText(), devModel.getText(), devECID.getText());
+                int nameInt = 1;
+                
+                try {
+                    ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("Objects/" + temp.getName() + ".txt"));
+                    os.writeObject(temp);
+                    os.close();
+                } catch (FileNotFoundException e){
+                    System.out.println("File Error");
+                } catch (IOException e) {
+                    System.out.println ("There was an Error");
+                }
+                
+                if (seeOutput) System.out.println(executeCommand(temp));
+                else executeCommand(temp);
             }
         });
         frame.setSize(300, 150);
     }
     
-    public static String getRandECID() {
-        Random rand = new Random();
-        int n = rand.nextInt(99999999) + 10000000;
-        int m = rand.nextInt(99999999) + 10000000;
-        return "" + n + m;
-    }
-    
-    public static String getRandModel() {
-        Random rand = new Random();
-        String[] configList = {"D22AP", "D221AP", "D211AP", "D21AP", "D201AP", "D20AP", 
-                "D111AP", "D11AP", "D101AP", "D10AP", "N69AP", "N69uAP", "N66mAP", "N66AP", 
-                "N71mAP", "N71AP", "N56AP", "N61AP", "N53AP", "N51AP"};
-        return configList[(rand.nextInt(19) + 0)];
-    }
-    
-    public static String executeCommand(String model, String ecid) {
+    public static String executeCommand(device iPhone) {
         String savePath;
         File file = new File("Blobs");
-	savePath = file.getAbsolutePath();
-	Path path = Paths.get(savePath);
-	
-	if (Files.notExists(path)) {
-	    file.mkdir();
-	}
-	
-	String BorD = "-B ";
-	if (tsscheckerPath.equals("directory/to/tsschecker_macos") || tsscheckerPath.equals("")) {
-	    tsscheckerPath = savePath.substring(0, savePath.length()-5) + "tsschecker_macos";
-	}
+        savePath = file.getAbsolutePath();
+        Path path = Paths.get(savePath);
+    
+        if (Files.notExists(path)) {
+            file.mkdir();
+        }
         
-	if (model.charAt(0) == 'i' || model.charAt(0) == 'I') BorD = "-d ";
-	
+    
+        String BorD = "-B ";
+        if (tsscheckerPath.equals("directory/to/tsschecker_macos") || tsscheckerPath.equals("")) {
+            tsscheckerPath = savePath.substring(0, savePath.length()-5) + "tsschecker_macos";
+        }
+        
+        if (iPhone.getModel().charAt(0) == 'i' || iPhone.getModel().charAt(0) == 'I') BorD = "-d ";
+    
         StringBuffer output = new StringBuffer();
         Process p;
         try {
             p = Runtime.getRuntime().exec(tsscheckerPath + " -l " + BorD + 
-                model + " -e " + ecid + " -s --save-path " + savePath);
+                iPhone.getModel() + " -e " + iPhone.getECID() + " -s --save-path " + savePath);
             p.waitFor();
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line = "";
