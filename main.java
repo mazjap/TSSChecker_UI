@@ -134,9 +134,7 @@ public class main {
 	
 	if (Files.notExists(path)) {
 	    file.mkdir();
-	    System.out.println("done");
 	}
-	else System.out.println("");
 	
 	String BorD = "-B ";
 	if (tsscheckerPath.equals("directory/to/tsschecker_macos") || tsscheckerPath.equals("")) {
