@@ -41,3 +41,5 @@ Congrats, you have a basic UI
 ~~5. Back button!~~
 
 6. Windows Support
+
+7. Save a chosen amount of blobs for a device
