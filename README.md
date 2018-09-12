@@ -1,5 +1,6 @@
 # TSSChecker_UI
 A simple user interface for TSSChecker written in Java
+
 Find the original TSSChecker [here](https://github.com/tihmstar/tsschecker)
 
 1. Clone this repository
