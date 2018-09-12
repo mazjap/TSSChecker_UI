@@ -28,4 +28,7 @@ Congrats, you have a basic UI
 ## Latest Tasks
 1. Automatically check for and download TSSChecker to main.java directory
 2. Make UI better
-3. When entering a new device from the "new" button, save it in the saved devices
+~~3. When entering a new device from the "new" button, save it in the saved devices~~
+4. Change name/ecid/model
+5. Back button!
+6. Windows Support
