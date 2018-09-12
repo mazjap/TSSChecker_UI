@@ -22,3 +22,9 @@ Congrats, you have a basic UI
 ~~1. Second devices blobs not saved~~
 
 ~~2. Unable to add more than three devices~~
+
+
+
+## Latest Tasks
+1. Automatically check for and download TSSChecker to main.java directory
+2. Make UI better
