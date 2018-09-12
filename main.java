@@ -9,30 +9,41 @@ import java.awt.*;
 
 public class main{
     static String[][] deviceList = {
-    // Delete, add, and change these according to your hearts desires. Both model and boardconfig work
-    //   Device Name    Model          ECID
-        {"iPhone 7 Plus", "D111AP", "4878191310291430"},
-        {"My iPhone Y", "iPhone5,1", "1869450485083"}
+    //Delete, add, and change these according to your hearts desires. Both model and boardconfig work
+    //   Device Name       Model           ECID
+        {"iPhone 7 Plus", "D111AP", "11550A08458F26"},
+        {"Maci's iPhone", "D111AP", "11550A08458F26"},
+        {"Other", "iPhone7,1", "11550A08458F53"}
     };
     
-    // Leave this as is if TSSChecker is in the same folder as main.java
+    //Leave this as is if TSSChecker is in the same folder as main.java
     static String tsscheckerPath = "directory/to/tsschecker_macos";
+    
+    //Change this to true if you would like to see the output from TSSChecker or to false if you don't
+    static boolean seeOutput = false;
     
     static JFrame frame = new JFrame("TSS UI");
     static JPanel panel = new JPanel();
+    
+    static Dimension buttonSize = new Dimension(75, 30);
+    
     public static void main (String[] args) {
         applicationPaneHome();
     }
     
     public static void applicationPaneHome() {
-        
         panel.setLayout(new FlowLayout());
         panel.removeAll(); panel.revalidate(); panel.repaint();
         
-        panel.add(new JLabel("\tSHSH Options:\t", SwingConstants.CENTER));
-        JButton savedDevice = new JButton("Saved Device"); panel.add(savedDevice);
-        JButton newDevice = new JButton("New Device"); panel.add(newDevice);
-        JButton ranDevice = new JButton("Random Device"); panel.add(ranDevice);
+        JLabel options = new JLabel("\tSHSH Options:\t", SwingConstants.CENTER); 
+        options.setPreferredSize(new Dimension(250, 20)); panel.add(options);
+        
+        JButton savedDevice = new JButton("Saved");
+        savedDevice.setPreferredSize(buttonSize); panel.add(savedDevice);
+        JButton newDevice = new JButton("New");
+        newDevice.setPreferredSize(buttonSize); panel.add(newDevice);
+        JButton ranDevice = new JButton("Random");
+        ranDevice.setPreferredSize(buttonSize);panel.add(ranDevice);
         
         savedDevice.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -44,15 +55,8 @@ public class main{
         }});
         ranDevice.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            Random rand = new Random();
-            String[] configList = {"D22AP", "D221AP", "D211AP", "D21AP", "D201AP", "D20AP", 
-                "D111AP", "D11AP", "D101AP", "D10AP", "N69AP", "N69uAP", "N66mAP", "N66AP", 
-                "N71mAP", "N71AP", "N56AP", "N61AP", "N53AP", "N51AP"};
-            String temp = "";
-            int n = rand.nextInt(99999999) + 10000000;
-            int m = rand.nextInt(99999999) + 10000000;
-            temp = "" + n + m;
-            executeCommand(configList[(rand.nextInt(19) + 0)], temp);
+            if (seeOutput) System.out.println(executeCommand(getRandModel(), getRandECID()));
+            else executeCommand(getRandModel(), getRandECID());
         }});
         
         
@@ -75,12 +79,13 @@ public class main{
             String ECID = deviceList[i][2];
             dev.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    executeCommand(model, ECID);
+                    if (seeOutput) System.out.println(executeCommand(model, ECID));
+                    else executeCommand(model, ECID);
                 }
             });
         }
-        int frameSize = (1+deviceList.length)/2*30;
-        frame.setSize(300, frameSize+50);
+        int frameSize = (1+deviceList.length)/2*100;
+        frame.setSize(500, frameSize);
     }
     
     public static void applicationPaneNew() {
@@ -98,9 +103,26 @@ public class main{
         JButton submit = new JButton("Submit"); panel.add(submit);
         submit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                executeCommand(devModel.getText(), devECID.getText());
+                if (seeOutput) System.out.println(executeCommand(devModel.getText(), devECID.getText()));
+                else executeCommand(devModel.getText(), devECID.getText());
             }
         });
+        frame.setSize(300, 150);
+    }
+    
+    public static String getRandECID() {
+        Random rand = new Random();
+        int n = rand.nextInt(99999999) + 10000000;
+        int m = rand.nextInt(99999999) + 10000000;
+        return "" + n + m;
+    }
+    
+    public static String getRandModel() {
+        Random rand = new Random();
+        String[] configList = {"D22AP", "D221AP", "D211AP", "D21AP", "D201AP", "D20AP", 
+                "D111AP", "D11AP", "D101AP", "D10AP", "N69AP", "N69uAP", "N66mAP", "N66AP", 
+                "N71mAP", "N71AP", "N56AP", "N61AP", "N53AP", "N51AP"};
+        return configList[(rand.nextInt(19) + 0)];
     }
     
     public static String executeCommand(String model, String ecid) {
@@ -112,9 +134,8 @@ public class main{
 	    tsscheckerPath = savePath.substring(0, savePath.length()-5) + "tsschecker_macos";
 	}
         
-	if (model.substring(0).equals("i") || model.substring(0).equals("I")) {
-	    BorD = "-d ";
-	}
+	if (model.charAt(0) == 'i' || model.charAt(0) == 'I') BorD = "-d ";
+    
 	
         StringBuffer output = new StringBuffer();
         Process p;
@@ -123,9 +144,9 @@ public class main{
                 model + " -e " + ecid + " -s --save-path " + savePath);
             p.waitFor();
             BufferedReader reader =
-                            new BufferedReader(new InputStreamReader(p.getInputStream()));
+                new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-                        String line = "";
+            String line = "";
             while ((line = reader.readLine())!= null) {
                 output.append(line + "\n");
             }
@@ -133,8 +154,6 @@ public class main{
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return output.toString();
-
     }
 }
