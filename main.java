@@ -11,9 +11,9 @@ public class main{
     static String[][] deviceList = {
     //Delete, add, and change these according to your hearts desires. Both model and boardconfig work
     //   Device Name       Model           ECID
-        {"iPhone 7 Plus", "D111AP", "11550A08458F26"},
-        {"Maci's iPhone", "D111AP", "11550A08458F26"},
-        {"Other", "iPhone7,1", "11550A08458F53"}
+        {"iPhone 7 Plus", "D111AP", "518410A58F2506"},
+        {"A Cool iPhone", "D111AP", "B0"},
+        {"Other", "iPhone7,1", "1122334454321"}
     };
     
     //Leave this as is if TSSChecker is in the same folder as main.java
@@ -73,7 +73,6 @@ public class main{
         JLabel selectDevice = new JLabel("Select a Device"); panel.add(selectDevice);
         for (int i=0; i<deviceList.length; i++) {
             JButton dev = new JButton(deviceList[i][0]);
-            dev.setMnemonic(i);
             panel.add(dev);
             String model = deviceList[i][1];
             String ECID = deviceList[i][2];
@@ -144,9 +143,9 @@ public class main{
                 model + " -e " + ecid + " -s --save-path " + savePath);
             p.waitFor();
             BufferedReader reader =
-                new BufferedReader(new InputStreamReader(p.getInputStream()));
+                            new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-            String line = "";
+                        String line = "";
             while ((line = reader.readLine())!= null) {
                 output.append(line + "\n");
             }
@@ -154,6 +153,8 @@ public class main{
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return output.toString();
+
     }
 }
