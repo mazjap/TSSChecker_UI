@@ -1,13 +1,14 @@
 import java.io.InputStreamReader;
-import java.io.BufferedReader;
 import java.util.Random;
 import java.awt.event.*;
+import java.lang.Object;
+import java.nio.file.*;
 import javax.swing.*;
-import java.io.File;
 import java.util.*;
 import java.awt.*;
+import java.io.*;
 
-public class main{
+public class main {
     static String[][] deviceList = {
     //Delete, add, and change these according to your hearts desires. Both model and boardconfig work
     //   Device Name       Model           ECID          (Make sure you add the comma)
@@ -129,13 +130,20 @@ public class main{
         String savePath;
         File file = new File("Blobs");
 	savePath = file.getAbsolutePath();
+	Path path = Paths.get(savePath);
+	
+	if (Files.notExists(path)) {
+	    file.mkdir();
+	    System.out.println("done");
+	}
+	else System.out.println("");
+	
 	String BorD = "-B ";
 	if (tsscheckerPath.equals("directory/to/tsschecker_macos") || tsscheckerPath.equals("")) {
 	    tsscheckerPath = savePath.substring(0, savePath.length()-5) + "tsschecker_macos";
 	}
         
 	if (model.charAt(0) == 'i' || model.charAt(0) == 'I') BorD = "-d ";
-    
 	
         StringBuffer output = new StringBuffer();
         Process p;
@@ -143,19 +151,14 @@ public class main{
             p = Runtime.getRuntime().exec(tsscheckerPath + " -l " + BorD + 
                 model + " -e " + ecid + " -s --save-path " + savePath);
             p.waitFor();
-            BufferedReader reader =
-                            new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-                        String line = "";
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line = "";
             while ((line = reader.readLine())!= null) {
                 output.append(line + "\n");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return output.toString();
-
     }
 }
