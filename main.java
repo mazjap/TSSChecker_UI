@@ -97,8 +97,6 @@ public class main {
             panel.removeAll(); panel.revalidate(); panel.repaint();
             JLabel selectDevice = new JLabel("You don't have any devices saved", SwingConstants.CENTER); 
             selectDevice.setPreferredSize(new Dimension(500, 20)); panel.add(selectDevice);
-        
-            frame.setSize(500, 300);
         }
         else {
             for (int i=1; i<file.list().length; i++) {
@@ -132,8 +130,6 @@ public class main {
                     }
                 });
             }
-            int frameSize = (1+deviceList.size())/2*100;
-            frame.setSize(500, frameSize);
         }
         JButton back = new JButton("Back"); panel.add(back);
         back.addActionListener(new java.awt.event.ActionListener() {
@@ -141,6 +137,7 @@ public class main {
                     applicationPaneHome();
                 }
             });
+        frame.setSize(500, 300);
     }
     
     public static void applicationPaneNew() {
