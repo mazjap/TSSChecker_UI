@@ -10,10 +10,11 @@ import java.awt.*;
 public class main{
     static String[][] deviceList = {
     //Delete, add, and change these according to your hearts desires. Both model and boardconfig work
-    //   Device Name       Model           ECID
-        {"iPhone 7 Plus", "D111AP", "518410A58F2506"},
-        {"A Cool iPhone", "D111AP", "B0"},
-        {"Other", "iPhone7,1", "1122334454321"}
+    //   Device Name       Model           ECID          (Make sure you add the comma)
+        {"iPhone 7P", "D111AP", "518410A58F2506"},
+        {"A Cool iPhone", "D11AP", "B0"},
+        {"Other", "iPhone7,1", "1122334454321"},
+        {"ipone u", "iPhone9,1", "58320357294A"}
     };
     
     //Leave this as is if TSSChecker is in the same folder as main.java
