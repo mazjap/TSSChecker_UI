@@ -1,4 +1,4 @@
-# TSSChecker_UI
+## TSSChecker_UI
 A simple user interface for TSSChecker written in Java
 Find the original TSSChecker [here](https://github.com/tihmstar/tsschecker)
 
@@ -16,3 +16,7 @@ java main
 ```
 
 Congrats, you have a basic UI
+
+
+# Known Bugs
+1. Second devices blobs not saved
