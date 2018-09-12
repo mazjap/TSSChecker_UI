@@ -19,5 +19,5 @@ Congrats, you have a basic UI
 
 
 ## Known Bugs
-~~1. Second devices blobs not saved
-2. Unable to add more than three devices~~
+~~1. Second devices blobs not saved~~
+~~2. Unable to add more than three devices~~
