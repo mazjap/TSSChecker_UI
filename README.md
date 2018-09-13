@@ -43,3 +43,5 @@ Congrats, you have a basic UI
 6. Windows Support
 
 7. Save a chosen amount of blobs for a device
+
+8. Custom APNonce
