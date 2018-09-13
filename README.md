@@ -24,7 +24,7 @@ Congrats, you have a basic UI
 
 ~~2. Unable to add more than three devices~~
 
-3. Dupicate saved devices when opening and closing 'Saved' page
+~~3. Dupicate saved devices when opening and closing 'Saved' page~~
 
 
 
