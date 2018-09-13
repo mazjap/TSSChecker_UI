@@ -22,6 +22,8 @@ public class main {
     
     static Dimension buttonSize = new Dimension(75, 30);
     
+    static int buttons = 0;
+    
     public static void main (String[] args) {
         File path = new File("tsschecker_macos");
         String objectPath = path.getAbsolutePath();
@@ -93,28 +95,34 @@ public class main {
         }
         
         File[] listOfFiles = file.listFiles();
+        
         if (listOfFiles.length == 0) {
             panel.removeAll(); panel.revalidate(); panel.repaint();
             JLabel selectDevice = new JLabel("You don't have any devices saved", SwingConstants.CENTER); 
             selectDevice.setPreferredSize(new Dimension(500, 20)); panel.add(selectDevice);
+        
+            frame.setSize(500, 300);
         }
         else {
             for (int i=1; i<file.list().length; i++) {
-                try {
-                    ObjectInputStream is = new ObjectInputStream(new FileInputStream(listOfFiles[i]));
-                    device temp = (device) is.readObject();
-                    deviceList.add(temp);
-                    is.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                if (buttons >= file.list().length-1) buttons = buttons;
+                else {
+                    try {
+                        ObjectInputStream is = new ObjectInputStream(new FileInputStream(listOfFiles[i]));
+                        device temp = (device) is.readObject();
+                        deviceList.add(temp);
+                        is.close();
+                    }   catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    buttons++;
                 }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-                catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            
             }
         
             panel.removeAll(); panel.revalidate(); panel.repaint();
@@ -130,6 +138,7 @@ public class main {
                     }
                 });
             }
+            
         }
         JButton back = new JButton("Back"); panel.add(back);
         back.addActionListener(new java.awt.event.ActionListener() {
@@ -137,6 +146,7 @@ public class main {
                     applicationPaneHome();
                 }
             });
+            
         frame.setSize(500, 300);
     }
     
