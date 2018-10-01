@@ -12,6 +12,10 @@ import java.awt.*;
 import java.io.*;
 
 public class main {
+    static String[] differentOS = {"macos", "windows.exe", "linux"};
+    //Change this to be 0, 1, or two depending on your Operating System listed above.
+    static String OS = differentOS[0];
+    
     //Change this to true if you would like to see the output from TSSChecker or to false if you don't
     static boolean seeOutput = false;
     
@@ -27,6 +31,7 @@ public class main {
     public static void main (String[] args) {
         File path = new File("tsschecker_macos");
         String objectPath = path.getAbsolutePath();
+        
         if (Files.notExists(Paths.get(objectPath))) {
             try {
                 saveUrl("tsschecker_v212_mac_win_linux.zip", "https://github.com/tihmstar/tsschecker/releases/download/v212/tsschecker_v212_mac_win_linux.zip");
@@ -36,8 +41,9 @@ public class main {
                 e.printStackTrace();
             }
             try {
-                extractFile(Paths.get(objectPath.substring(0,objectPath.length()-6) + "_v212_mac_win_linux.zip"),"tsschecker_macos", Paths.get(objectPath));
-                executeCommand("chmod 755 " + objectPath);
+                
+                extractFile(Paths.get(objectPath.substring(0,objectPath.length()-6) + "_v212_mac_win_linux.zip"),"tsschecker" + "_" + OS, Paths.get(objectPath));
+                if (!(OS.equals(differentOS[1]))) executeCommand("chmod 755 " + objectPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -73,9 +79,7 @@ public class main {
         }});
         ranDevice.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            device temp = new device();
-            if (seeOutput) System.out.println(executeTSS(temp));
-            else executeTSS(temp);
+            applicationPaneRandom();
         }});
         
         frame.add(panel);
@@ -95,46 +99,55 @@ public class main {
         }
         
         File[] listOfFiles = file.listFiles();
+        deviceList.clear();
         
-        if (listOfFiles.length == 0) {
+        for (int i=0; i<listOfFiles.length; i++) {
+            try {
+                ObjectInputStream is = new ObjectInputStream(new FileInputStream(listOfFiles[i]));
+                device temp = (device) is.readObject();
+                deviceList.add(temp);
+                is.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        
+        if (deviceList.size() == 0) {
             panel.removeAll(); panel.revalidate(); panel.repaint();
-            JLabel selectDevice = new JLabel("You don't have any devices saved", SwingConstants.CENTER); 
+            JLabel selectDevice = new JLabel("You don't have any saved devices", SwingConstants.CENTER); 
             selectDevice.setPreferredSize(new Dimension(500, 20)); panel.add(selectDevice);
         
             frame.setSize(500, 300);
         }
         else {
-            for (int i=1; i<file.list().length; i++) {
-                if (buttons >= file.list().length-1) buttons = buttons;
-                else {
-                    try {
-                        ObjectInputStream is = new ObjectInputStream(new FileInputStream(listOfFiles[i]));
-                        device temp = (device) is.readObject();
-                        deviceList.add(temp);
-                        is.close();
-                    }   catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    buttons++;
-                }
-            }
-        
             panel.removeAll(); panel.revalidate(); panel.repaint();
-            JLabel selectDevice = new JLabel("Select a Device"); panel.add(selectDevice);
+            JLabel selectDevice = new JLabel("Select a Device", SwingConstants.CENTER); panel.add(selectDevice);
+            selectDevice.setPreferredSize(new Dimension(500, 20));
+            
+            panel.add(new JLabel("\tAmount of Blobs to be saved:  \t", SwingConstants.CENTER));
+            JTextField blobsNum = new JTextField(); panel.add(blobsNum);
+            blobsNum.setPreferredSize(new Dimension(100, 20));
+            
             for (int i=0; i<deviceList.size(); i++) {
                 JButton dev = new JButton(deviceList.get(i).getName());
                 panel.add(dev);
                 int val = i;
                 dev.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        if (seeOutput) System.out.println(executeTSS(deviceList.get(val)));
-                        else executeTSS(deviceList.get(val));
+                        try {
+                        for (int i=0; i<Integer.parseInt(blobsNum.getText()); i++) {
+                                if (seeOutput) System.out.println(executeTSS(deviceList.get(val)));
+                                else executeTSS(deviceList.get(val));
+                        }
+                        } catch (NumberFormatException e) {
+                            if (seeOutput) System.out.println(executeTSS(deviceList.get(val)));
+                            else executeTSS(deviceList.get(val));
+                        }
                     }
                 });
             }
@@ -161,6 +174,9 @@ public class main {
         panel.add(new JLabel("\tEnter device model:\t", SwingConstants.CENTER));
         JTextField devModel = new JTextField(); panel.add(devModel);
         devModel.setPreferredSize(new Dimension(100, 20));
+        panel.add(new JLabel("\tAmount of Blobs:    \t", SwingConstants.CENTER));
+        JTextField devAmount = new JTextField(); panel.add(devAmount); 
+        devAmount.setPreferredSize(new Dimension(100, 20));
         
         File file = new File("Objects");
         String objectPath = file.getAbsolutePath();
@@ -172,21 +188,40 @@ public class main {
         JButton submit = new JButton("Submit"); panel.add(submit);
         submit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                device temp = new device(devName.getText(), devModel.getText(), devECID.getText());
-                int nameInt = 1;
-                
                 try {
-                    ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("Objects/" + temp.getName() + ".txt"));
-                    os.writeObject(temp);
-                    os.close();
-                } catch (FileNotFoundException e){
-                    System.out.println("File Error");
-                } catch (IOException e) {
-                    System.out.println ("There was an Error");
+                    for (int i=0; i<Integer.parseInt(devAmount.getText()); i++) {
+                        device temp = new device(devName.getText(), devModel.getText(), devECID.getText());
+                    
+                        int nameInt = 1;
+                    
+                        try {
+                            ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("Objects/" + temp.getName() + ".bin"));
+                            os.writeObject(temp);
+                            os.close();
+                        } catch (FileNotFoundException e){
+                            System.out.println("File Error");
+                        } catch (IOException e) {
+                            System.out.println ("There was an Error");
+                        }
+                    
+                        if (seeOutput) System.out.println(executeTSS(temp));
+                        else executeTSS(temp);
+                    }
+                } catch (NumberFormatException f) {
+                    device temp = new device(devName.getText(), devModel.getText(), devECID.getText());
+                    try {
+                        ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("Objects/" + temp.getName() + ".bin"));
+                        os.writeObject(temp);
+                        os.close();
+                    } catch (FileNotFoundException e){
+                        System.out.println("File Error");
+                    } catch (IOException e) {
+                        System.out.println ("There was an Error");
+                    }
+                    
+                    if (seeOutput) System.out.println(executeTSS(temp));
+                    else executeTSS(temp);
                 }
-                
-                if (seeOutput) System.out.println(executeTSS(temp));
-                else executeTSS(temp);
             }
         });
         
@@ -197,7 +232,40 @@ public class main {
                 }
             });
         
-        frame.setSize(300, 150);
+        frame.setSize(300, 170);
+    }
+    
+    public static void applicationPaneRandom() {
+        panel.removeAll(); panel.revalidate(); panel.repaint();
+        
+        panel.add(new JLabel("Amount of Blobs to Save: ", SwingConstants.CENTER));
+        JTextField blobsNum = new JTextField(); panel.add(blobsNum); 
+        blobsNum.setPreferredSize(new Dimension(100, 20));
+        
+        JButton submit = new JButton("Submit"); panel.add(submit);
+        submit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                try {
+                    for (int i=0; i<Integer.parseInt(blobsNum.getText()); i++) {
+                        device temp = new device();
+                        if (seeOutput) System.out.println(executeTSS(temp));
+                        else executeTSS(temp);
+                    }
+                } catch (NumberFormatException e) {
+                    device temp = new device();
+                    if (seeOutput) System.out.println(executeTSS(temp));
+                    else executeTSS(temp);;
+                }
+            }
+        });
+        JButton back = new JButton("Back"); panel.add(back);
+        back.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    applicationPaneHome();
+                }
+            });
+        
+        frame.setSize(350, 100);
     }
     
     public static void saveUrl(final String filename, final String urlString) throws MalformedURLException, IOException {
@@ -241,7 +309,7 @@ public class main {
         
     
         String BorD = "-B ";
-        String tsscheckerPath = savePath.substring(0, savePath.length()-5) + "tsschecker_macos";
+        String tsscheckerPath = savePath.substring(0, savePath.length()-5) + "tsschecker" + "_" + OS;
         
         if (iPhone.getModel().charAt(0) == 'i' || iPhone.getModel().charAt(0) == 'I') BorD = "-d ";
     
