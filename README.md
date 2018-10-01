@@ -3,9 +3,9 @@ A simple user interface for TSSChecker written in Java
 
 Find the original TSSChecker [here](https://github.com/tihmstar/tsschecker)
 
-1. Clone this repository
-2. Edit lines 14-16(+), and 20 if necessary, to fit your needs
-3. In terminal, type:
+1. Download this repository's zip file
+2. Edit lines 17 and 20 to fit your needs
+3. In terminal, type: (Do this if you ever edit the java.main file as well)
 ```
 cd (the location of TSSChecker_UI-master)
 javac main.java
@@ -24,7 +24,7 @@ Congrats, you have a basic UI
 
 ~~2. Unable to add more than three devices~~
 
-~~3. Dupicate saved devices when opening and closing 'Saved' page~~
+~~3. Duplicate saved devices when opening and closing 'Saved' page~~
 
 
 
@@ -36,12 +36,14 @@ Congrats, you have a basic UI
 
 ~~3. When entering a new device from the "new" button, save it in the saved devices~~
 
-4. Change name/ecid/model
+4. Change name/ecid/model of saved devices
 
 ~~5. Back button!~~
 
-6. Windows Support
+6. Windows Support - Semi Windows and Linux support added. - Working on it
 
-7. Save a chosen amount of blobs for a device
+~~7. Save a chosen amount of blobs for a device~~
 
 8. Custom APNonce
+
+9. Compile into a runnable app, instead of having to use terminal to compile and run each time.
