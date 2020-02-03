@@ -4,15 +4,14 @@ A simple user interface for TSSChecker written in Java
 Find the original TSSChecker [here](https://github.com/tihmstar/tsschecker)
 
 1. Download this repository's zip file
-2. Edit lines 17 and 20 to fit your needs
-3. In terminal, type: (Do this if you ever edit the java.main file as well)
+2. In terminal, type: (Do this if you ever edit the java.main file as well)
 ```
 cd (the location of TSSChecker_UI-master)
-javac main.java
+javac Main.java
 ```
-4. Either double click the `main.class` file or run:
+3. Either double click the `Main.class` file or run:
 ```
-java main
+java Main
 ```
 
 Congrats, you have a basic UI
